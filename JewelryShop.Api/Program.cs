@@ -39,6 +39,17 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// CORS: allow the local frontend (Vite) during development
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // Configuration placeholders - set these in appsettings
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "please-change-this-secret-key";
 var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "JewelryShop";
@@ -95,6 +106,8 @@ app.UseSwaggerUI(c => {
 
 app.UseStaticFiles();
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
