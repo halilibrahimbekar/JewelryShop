@@ -37,6 +37,7 @@ namespace JewelryShop.Application.Services
                 Email = dto.Email,
                 FullName = dto.FullName
             };
+            if (!string.IsNullOrWhiteSpace(dto.Role)) user.Role = dto.Role!;
 
             user.PasswordHash = _hasher.HashPassword(user, dto.Password);
             await _users.AddAsync(user);
@@ -63,7 +64,12 @@ namespace JewelryShop.Application.Services
         {
             var key = _config["Jwt:Key"] ?? "please-change-this-secret-key";
             var issuer = _config["Jwt:Issuer"] ?? "JewelryShop";
-            var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()), new Claim(JwtRegisteredClaimNames.Email, user.Email) };
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email)
+            };
+            if (!string.IsNullOrWhiteSpace(user.Role)) claims.Add(new Claim(ClaimTypes.Role, user.Role));
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var creds = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(issuer: issuer, claims: claims, expires: DateTime.UtcNow.AddMinutes(60), signingCredentials: creds);

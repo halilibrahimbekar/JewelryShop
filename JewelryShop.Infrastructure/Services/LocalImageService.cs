@@ -9,7 +9,9 @@ namespace JewelryShop.Infrastructure.Services
 
         public LocalImageService(IConfiguration config)
         {
-            _basePath = config["Images:Path"] ?? Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+            var configured = config["Images:Path"];
+            var uploadsFolder = string.IsNullOrWhiteSpace(configured) ? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads") : configured;
+            _basePath = uploadsFolder;
             if (!Directory.Exists(_basePath)) Directory.CreateDirectory(_basePath);
         }
 
@@ -27,10 +29,12 @@ namespace JewelryShop.Infrastructure.Services
         public async Task<string> SaveImageAsync(Stream stream, string fileName)
         {
             var safe = Path.GetFileName(fileName);
-            var full = Path.Combine(_basePath, $"{Guid.NewGuid()}_{safe}");
+            var fileNameOnDisk = $"{Guid.NewGuid()}_{safe}";
+            var full = Path.Combine(_basePath, fileNameOnDisk);
             using var fs = File.Create(full);
             await stream.CopyToAsync(fs);
-            return full;
+            // return a URL path relative to the web root so clients can fetch it
+            return $"/uploads/{fileNameOnDisk}";
         }
     }
 }
