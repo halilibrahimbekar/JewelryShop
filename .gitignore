@@ -2988,3 +2988,5 @@ JewelryShop.UI/node_modules/yallist/LICENSE
 JewelryShop.UI/node_modules/yallist/package.json
 JewelryShop.UI/node_modules/yallist/README.md
 JewelryShop.UI/node_modules/yallist/yallist.js
+/.vs
+/JewelryShop.Api/obj/Debug/net8.0/EndpointInfo
