@@ -1,5 +1,5 @@
 import React from 'react'
-import CatalogPage from './pages/CatalogPage'
+import HomePage from './pages/HomePage'
 import Header from './components/Header'
 
 export default function App() {
@@ -7,7 +7,7 @@ export default function App() {
     <div className="app-container">
       <Header />
       <main>
-        <CatalogPage />
+        <HomePage />
       </main>
     </div>
   )
