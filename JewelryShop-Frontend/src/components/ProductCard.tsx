@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ShoppingCart, Heart, Star } from 'lucide-react'
+import { useCart } from '../context/CartContext'
 import type { Product } from '../services/api'
 
 interface ProductCardProps {
@@ -7,8 +8,15 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const { addItem } = useCart()
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault() // Link'e tıklamayı engelle
+    e.stopPropagation()
+    addItem(product, 1)
+  }
   return (
-    <div className="card-jewelry group">
+    <div className="card-jewelry group h-full flex flex-col">
       {/* Image Container */}
       <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50">
         <img
@@ -52,8 +60,8 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
       
       {/* Product Info */}
-      <div className="p-6">
-        <div className="mb-2">
+      <div className="p-6 flex-1 flex flex-col">
+        <div className="mb-2 flex-1">
           <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors duration-200">
             <Link to={`/products/${product.id}`}>
               {product.name}
@@ -72,16 +80,16 @@ export default function ProductCard({ product }: ProductCardProps) {
             ))}
             <span className="text-sm text-gray-500 ml-1">(24)</span>
           </div>
+          
+          {product.description && (
+            <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+              {product.description}
+            </p>
+          )}
         </div>
         
-        {product.description && (
-          <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-            {product.description}
-          </p>
-        )}
-        
-        {/* Price and Actions */}
-        <div className="flex items-center justify-between">
+        {/* Price and Actions - Always at bottom */}
+        <div className="flex items-center justify-between mt-auto">
           <div className="flex flex-col">
             <span className="text-2xl font-bold gradient-text">
               ₺{product.price.toLocaleString('tr-TR')}
@@ -92,12 +100,14 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
           
           <button
+            onClick={handleAddToCart}
             className={`p-3 rounded-full transition-all duration-200 ${
               product.stock === 0
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white hover:scale-110 shadow-lg hover:shadow-xl'
             }`}
             disabled={product.stock === 0}
+            title={product.stock === 0 ? 'Stokta yok' : 'Sepete ekle'}
           >
             <ShoppingCart className="h-5 w-5" />
           </button>
