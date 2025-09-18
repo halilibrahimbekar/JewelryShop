@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { fetchProducts } from '../services/api'
 import type { Product } from '../services/api'
 import ProductCard from '../components/ProductCard.tsx'
-import { Star, Shield, Truck, Award, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import mivoraLogo from '../assets/mivora.png'
 
 export default function HomePage() {
