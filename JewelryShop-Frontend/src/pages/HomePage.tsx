@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchProducts } from '../services/api'
 import type { Product } from '../services/api'
-import ProductCard from '../components/ProductCard'
+import ProductCard from '../components/ProductCard.tsx'
 import { Star, Shield, Truck, Award, ArrowRight } from 'lucide-react'
 
 export default function HomePage() {
