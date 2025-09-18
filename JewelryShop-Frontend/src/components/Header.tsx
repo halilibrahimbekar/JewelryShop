@@ -16,7 +16,7 @@ export default function Header() {
             <Link to="/" className="flex items-center space-x-2">
               <Sparkles className="h-8 w-8 text-purple-600" />
               <span className="text-2xl font-bold gradient-text">
-                JewelryShop
+                Mivora
               </span>
             </Link>
           </div>

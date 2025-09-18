@@ -37,13 +37,13 @@ export default function HomePage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <div className="text-center">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-              Zarif
+              Kadının
               <span className="block gradient-text bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent">
-                Mücevherler
+                Zarafeti
               </span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-purple-100 leading-relaxed">
-              En güzel mücevherlerle tarzınızı tamamlayın. Kaliteli ve özgün tasarımlarımızla özel hissedin.
+              Bileklik, küpe, yüzük ve kolye koleksiyonlarımızla kadının güzelliğini öne çıkarın. Mivora ile tarzınızı tamamlayın.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -69,7 +69,7 @@ export default function HomePage() {
               Öne Çıkan <span className="gradient-text">Ürünler</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              En sevilen ve en çok tercih edilen mücevherlerimizi keşfedin
+              Kadınlar için özel tasarlanmış bileklik, küpe, yüzük ve kolye koleksiyonlarımızı keşfedin
             </p>
           </div>
 

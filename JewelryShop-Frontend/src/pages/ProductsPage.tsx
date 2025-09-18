@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { fetchProducts } from '../services/api'
 import type { Product } from '../services/api'
 import ProductCard from '../components/ProductCard'
 import { Search } from 'lucide-react'
 
+const categories = ['Tümü', 'Bileklik', 'Küpe', 'Yüzük', 'Kolye']
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('Tümü')
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+  const [searchParams] = useSearchParams()
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -26,13 +31,34 @@ export default function ProductsPage() {
     loadProducts()
   }, [])
 
+  // Handle category from URL params
   useEffect(() => {
-    const filtered = products.filter(product =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()))
-    )
+    const categoryFromUrl = searchParams.get('category')
+    if (categoryFromUrl && categories.includes(categoryFromUrl)) {
+      setSelectedCategory(categoryFromUrl)
+    }
+  }, [searchParams])
+
+  useEffect(() => {
+    let filtered = products
+
+    // Filter by category
+    if (selectedCategory !== 'Tümü') {
+      filtered = filtered.filter(product => 
+        product.category === selectedCategory
+      )
+    }
+
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
+    }
+
     setFilteredProducts(filtered)
-  }, [searchTerm, products])
+  }, [searchTerm, selectedCategory, products])
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -40,11 +66,30 @@ export default function ProductsPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Tüm Ürünler
+            Mivora <span className="gradient-text">Koleksiyonu</span>
           </h1>
           <p className="text-lg text-gray-600">
-            Benzersiz mücevher koleksiyonumuzu keşfedin
+            Kadın takıları koleksiyonumuzu keşfedin - Bileklik, küpe, yüzük ve kolye
           </p>
+        </div>
+
+        {/* Category Filter */}
+        <div className="mb-6">
+          <div className="flex flex-wrap justify-center gap-2">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  selectedCategory === category
+                    ? 'bg-purple-600 text-white shadow-lg'
+                    : 'bg-white text-gray-600 hover:bg-purple-50 hover:text-purple-600 border border-gray-200'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Search */}
