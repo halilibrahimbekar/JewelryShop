@@ -43,7 +43,9 @@ export interface Product {
   price: number
   stock: number
   imageUrl?: string
+  images?: string[]
   category: string
+  sizes?: string[]
 }
 
 // Mock data for jewelry products
@@ -156,8 +158,10 @@ export async function fetchProductById(id: string): Promise<Product | null> {
     const response = await api.get(`/api/products/${id}`)
     return response.data
   } catch (error) {
-    console.error('Error fetching product:', error)
-    return null
+    console.error('Error fetching product, using mock data:', error)
+    // Return mock data when API is not available
+    const product = mockProducts.find(p => p.id === id)
+    return product || null
   }
 }
 
