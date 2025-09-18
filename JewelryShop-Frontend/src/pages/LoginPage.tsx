@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { login as apiLogin } from '../services/api'
 import { useAuth } from '../context/AuthContext'
-import { Eye, EyeOff, Mail, Lock, Sparkles } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
+import mivoraLogo from '../assets/mivora.png'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -31,18 +32,26 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="h-screen flex overflow-hidden">
       {/* Left side - Form */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-md w-full space-y-8">
+          {/* Logo and Brand */}
           <div className="text-center">
-            <div className="flex justify-center mb-4">
-              <Sparkles className="h-12 w-12 text-purple-600" />
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900">
+            <Link to="/" className="inline-flex items-center space-x-4 mb-8">
+              <img 
+                src={mivoraLogo} 
+                alt="Mivora Logo" 
+                className="h-16 w-16 object-contain rounded-lg"
+              />
+              <span className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Mivora</span>
+            </Link>
+            
+
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">
               Hoş Geldiniz
             </h2>
-            <p className="mt-2 text-gray-600">
+            <p className="text-gray-600">
               Hesabınıza giriş yapın
             </p>
           </div>
