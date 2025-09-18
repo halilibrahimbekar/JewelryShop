@@ -28,14 +28,14 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-purple-900 via-purple-800 to-pink-800 text-white overflow-hidden">
+      <section className="relative bg-gradient-to-br from-purple-900 via-purple-800 to-pink-800 text-white overflow-hidden w-full!important ">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0 opacity-40" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
         }}></div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+        <div className="relative w-full px-4 py-24 lg:py-32">
           <div className="text-center">
             <div className="flex justify-center mb-8 animate-fade-in">
               <div className="bg-white/10 backdrop-blur-sm p-4 rounded-2xl">
@@ -73,7 +73,7 @@ export default function HomePage() {
 
       {/* Featured Products */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Öne Çıkan <span className="gradient-text">Ürünler</span>
@@ -95,7 +95,7 @@ export default function HomePage() {
               {products.map((product, index) => (
                 <div
                   key={product.id}
-                  className="animate-fade-in"
+                  className="animate-fade-in h-full"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <ProductCard product={product} />
@@ -117,11 +117,11 @@ export default function HomePage() {
       </section>
 
       {/* Features */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-purple-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* <section className="py-20 bg-gradient-to-br from-gray-50 to-purple-50">
+        <div className="w-full px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Neden <span className="gradient-text">JewelryShop</span>?
+              Neden <span className="gradient-text">Mivora </span>?
             </h2>
           </div>
           
@@ -167,10 +167,10 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Newsletter */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 to-pink-600">
+      {/* <section className="py-20 bg-gradient-to-r from-purple-600 to-pink-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold text-white mb-4">
             Özel Kampanyalardan Haberdar Olun
@@ -189,7 +189,7 @@ export default function HomePage() {
             </button>
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   )
 }
