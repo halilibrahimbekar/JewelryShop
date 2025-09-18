@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { Instagram, Heart, Sparkles } from 'lucide-react'
+import { Instagram, Heart } from 'lucide-react'
+import mivoraLogo from '../assets/mivora.png'
 
 export default function Footer() {
   return (
@@ -10,7 +11,11 @@ export default function Footer() {
             {/* Brand */}
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
-                <Sparkles className="h-8 w-8 text-purple-500" />
+                <img 
+                  src={mivoraLogo} 
+                  alt="Mivora Logo" 
+                  className="h-8 w-8 object-contain rounded-lg"
+                />
                 <span className="text-2xl font-bold text-gray-800">Mivora</span>
               </div>
               <p className="text-gray-600 mb-6 max-w-md">
@@ -85,7 +90,7 @@ export default function Footer() {
         <div className="border-t border-gray-200 pt-8 mt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-500 text-sm">
-              © 2024 Mivora. Tüm hakları saklıdır.
+              © 2025 Mivora. Tüm hakları saklıdır.
             </p>
             <div className="flex items-center space-x-1 text-gray-500 text-sm mt-4 md:mt-0">
               <span>Made with</span>

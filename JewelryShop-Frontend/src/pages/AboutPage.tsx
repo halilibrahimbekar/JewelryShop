@@ -1,4 +1,5 @@
 import { Instagram, Heart, Award, Shield } from 'lucide-react'
+import mivoraLogo from '../assets/mivora.png'
 
 export default function AboutPage() {
   return (
@@ -7,6 +8,13 @@ export default function AboutPage() {
       <section className="relative bg-gradient-to-br from-purple-900 via-purple-800 to-pink-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
+            <div className="flex justify-center mb-6">
+              <img 
+                src={mivoraLogo} 
+                alt="Mivora Logo" 
+                className="h-16 w-16 object-contain rounded-xl"
+              />
+            </div>
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
               <span className="gradient-text bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent">
                 Mivora

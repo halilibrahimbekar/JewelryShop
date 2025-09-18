@@ -4,6 +4,7 @@ import { fetchProducts } from '../services/api'
 import type { Product } from '../services/api'
 import ProductCard from '../components/ProductCard.tsx'
 import { Star, Shield, Truck, Award, ArrowRight } from 'lucide-react'
+import mivoraLogo from '../assets/mivora.png'
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([])
@@ -36,6 +37,15 @@ export default function HomePage() {
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <div className="text-center">
+            <div className="flex justify-center mb-8 animate-fade-in">
+              <div className="bg-white/10 backdrop-blur-sm p-4 rounded-2xl">
+                <img 
+                  src={mivoraLogo} 
+                  alt="Mivora Logo" 
+                  className="h-16 w-16 object-contain rounded-xl"
+                />
+              </div>
+            </div>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
               Kadının
               <span className="block gradient-text bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent">

@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { ShoppingBag, User, LogOut, Sparkles, Menu, X } from 'lucide-react'
+import { ShoppingBag, User, LogOut, Menu, X } from 'lucide-react'
 import { useState } from 'react'
+import mivoraLogo from '../assets/mivora.png'
 
 export default function Header() {
   const { isAuth, logout } = useAuth()
@@ -14,7 +15,11 @@ export default function Header() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center space-x-2">
-              <Sparkles className="h-8 w-8 text-purple-600" />
+              <img 
+                src={mivoraLogo} 
+                alt="Mivora Logo" 
+                className="h-8 w-8 object-contain rounded-lg"
+              />
               <span className="text-2xl font-bold gradient-text">
                 Mivora
               </span>
