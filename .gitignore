@@ -2,6 +2,23 @@
 # Build artifacts
 **/bin/
 **/obj/
+**/Debug/
+**/Release/
+
+# .NET Core / .NET 5+
+*.dll
+*.exe
+*.pdb
+*.deps.json
+*.runtimeconfig.json
+*.runtimeconfig.dev.json
+
+# NuGet packages
+*.nuget.props
+*.nuget.targets
+*.nuget.dgspec.json
+project.assets.json
+project.nuget.cache
 
 # User-specific files
 *.user

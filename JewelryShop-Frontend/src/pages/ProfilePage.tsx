@@ -113,13 +113,6 @@ export default function ProfilePage() {
     })
   }
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY'
-    }).format(price)
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 py-8">
       <div className="max-w-6xl mx-auto px-4">
@@ -168,16 +161,8 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <span className="text-green-600 font-bold text-lg">₺</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Toplam Harcama</h3>
-                <p className="text-2xl font-bold text-green-600">{formatPrice(userProfile.totalSpent)}</p>
-              </div>
-            </div>
+          <div className="">
+
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-6">

@@ -22,7 +22,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__Default=Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
     ports:
-      - "5000:80"
+      - "5004:80"
 
 volumes:
   pgdata:
