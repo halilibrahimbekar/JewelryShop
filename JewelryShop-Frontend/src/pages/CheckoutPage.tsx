@@ -33,18 +33,56 @@ export default function CheckoutPage() {
     }
   })
 
+  const validateCurrentStep = () => {
+    const currentStepFields = getCurrentStepFields()
+    const stepData: Partial<CheckoutFormData> = {}
+    
+    // Sadece mevcut adıma ait alanları al
+    currentStepFields.forEach(field => {
+      stepData[field] = values[field]
+    })
+
+    try {
+      // Sadece mevcut adım için kısmi schema oluştur ve doğrula
+      const stepSchema = checkoutSchema.pick(
+        Object.fromEntries(currentStepFields.map(field => [field, true]))
+      )
+      stepSchema.parse(stepData)
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+
+  const getCurrentStepFields = (): (keyof CheckoutFormData)[] => {
+    switch (currentStep) {
+      case 1:
+        return ['firstName', 'lastName', 'email', 'phone']
+      case 2:
+        return ['address', 'city', 'postalCode']
+      case 3:
+        return ['cardHolder', 'cardNumber', 'expiryDate', 'cvv']
+      default:
+        return []
+    }
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    const isValid = validateForm()
-    if (!isValid) {
-      console.log('Validation errors:', errors)
-      return
-    }
-    
     if (currentStep < 3) {
-      setCurrentStep(currentStep + 1)
+      // Sadece mevcut adımı doğrula
+      if (validateCurrentStep()) {
+        setCurrentStep(currentStep + 1)
+      }
     } else {
+      // Son adımda tüm formu doğrula
+      const isValid = validateForm()
+      if (!isValid) {
+        console.log('Validation errors:', errors)
+        return
+      }
+      
       // Final submission
       console.log('Order submitted:', values)
       alert('Siparişiniz başarıyla alındı!')
