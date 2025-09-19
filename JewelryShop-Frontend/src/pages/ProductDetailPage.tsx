@@ -11,7 +11,6 @@ export default function ProductDetailPage() {
   const { addItem, addItemSilent } = useCart()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
-  const [selectedSize, setSelectedSize] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [isFavorite, setIsFavorite] = useState(false)
 
@@ -76,31 +75,19 @@ export default function ProductDetailPage() {
   const handleAddToCart = () => {
     if (!product) return
     
-    if (!selectedSize) {
-      console.log('Lütfen beden seçiniz!')
-      return
-    }
-
-    addItem(product, quantity, selectedSize)
-    console.log('Ürün sepete eklendi!')
+    addItem(product, quantity)
+    setQuantity(1)
   }
 
   const handleBuyNow = () => {
     if (!product) return
     
-    if (!selectedSize) {
-      console.log('Lütfen beden seçiniz!')
-      return
-    }
-
     // Önce sepete ekle (cart sidebar'ı açmadan)
-    addItemSilent(product, quantity, selectedSize)
+    addItemSilent(product, quantity)
     console.log('Ürün sepete eklendi ve checkout sayfasına yönlendiriliyor')
     // Sonra checkout'a yönlendir
     navigate('/checkout')
   }
-
-  const sizes = ['XS', 'S', 'M', 'L', 'XL'] // Takılar için beden seçenekleri
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50">
@@ -193,26 +180,6 @@ export default function ProductDetailPage() {
               <p className="text-gray-600 leading-relaxed">
                 {product.description || 'Bu zarif takı parçası, özenle seçilmiş malzemelerden üretilmiştir. Modern tasarımı ve kaliteli işçiliği ile günlük kullanımda veya özel anlarda mükemmel bir seçimdir.'}
               </p>
-            </div>
-
-            {/* Size Selection */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Beden Seçimi</h3>
-              <div className="flex space-x-3">
-                {sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-2 border-2 rounded-lg font-medium transition-colors ${
-                      selectedSize === size
-                        ? 'border-purple-600 bg-purple-50 text-purple-600'
-                        : 'border-gray-200 hover:border-purple-300'
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
             </div>
 
             {/* Quantity */}

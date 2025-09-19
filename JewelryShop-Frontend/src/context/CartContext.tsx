@@ -9,7 +9,6 @@ export interface CartItem {
   images: string[]
   category: string
   quantity: number
-  size?: string
 }
 
 // Sepet state tipi
@@ -22,8 +21,8 @@ interface CartState {
 
 // Action tipleri
 type CartAction =
-  | { type: 'ADD_ITEM'; payload: { product: Product; quantity: number; selectedSize?: string } }
-  | { type: 'ADD_ITEM_SILENT'; payload: { product: Product; quantity: number; selectedSize?: string } }
+  | { type: 'ADD_ITEM'; payload: { product: Product; quantity: number } }
+  | { type: 'ADD_ITEM_SILENT'; payload: { product: Product; quantity: number } }
   | { type: 'REMOVE_ITEM'; payload: { id: string } }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
   | { type: 'CLEAR_CART' }
@@ -35,8 +34,8 @@ type CartAction =
 interface CartContextType {
   state: CartState
   items: CartItem[]
-  addItem: (product: Product, quantity?: number, selectedSize?: string) => void
-  addItemSilent: (product: Product, quantity?: number, selectedSize?: string) => void
+  addItem: (product: Product, quantity?: number) => void
+  addItemSilent: (product: Product, quantity?: number) => void
   removeItem: (id: string) => void
   updateQuantity: (id: string, quantity: number) => void
   clearCart: () => void
@@ -59,11 +58,11 @@ const calculateItemCount = (items: CartItem[]): number => {
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
     case 'ADD_ITEM': {
-      const { product, quantity = 1, selectedSize } = action.payload
+      const { product, quantity = 1 } = action.payload
       
-      // Aynı ürün ve beden varsa miktarını artır
+      // Aynı ürün varsa miktarını artır
       const existingItemIndex = state.items.findIndex(
-        item => item.id === product.id && item.size === selectedSize
+        item => item.id === product.id
       )
 
       let newItems: CartItem[]
@@ -83,8 +82,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           price: product.price,
           images: product.images || [product.imageUrl || ''],
           category: product.category,
-          quantity,
-          size: selectedSize
+          quantity
         }
         newItems = [...state.items, newItem]
       }
@@ -99,11 +97,11 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
     }
 
     case 'ADD_ITEM_SILENT': {
-      const { product, quantity = 1, selectedSize } = action.payload
+      const { product, quantity = 1 } = action.payload
       
-      // Aynı ürün ve beden varsa miktarını artır
+      // Aynı ürün varsa miktarını artır
       const existingItemIndex = state.items.findIndex(
-        item => item.id === product.id && item.size === selectedSize
+        item => item.id === product.id
       )
 
       let newItems: CartItem[]
@@ -123,8 +121,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           price: product.price,
           images: product.images || [product.imageUrl || ''],
           category: product.category,
-          quantity,
-          size: selectedSize
+          quantity
         }
         newItems = [...state.items, newItem]
       }
@@ -221,12 +218,12 @@ interface CartProviderProps {
 export function CartProvider({ children }: CartProviderProps) {
   const [state, dispatch] = useReducer(cartReducer, initialState)
 
-  const addItem = (product: Product, quantity = 1, selectedSize?: string) => {
-    dispatch({ type: 'ADD_ITEM', payload: { product, quantity, selectedSize } })
+  const addItem = (product: Product, quantity = 1) => {
+    dispatch({ type: 'ADD_ITEM', payload: { product, quantity } })
   }
 
-  const addItemSilent = (product: Product, quantity = 1, selectedSize?: string) => {
-    dispatch({ type: 'ADD_ITEM_SILENT', payload: { product, quantity, selectedSize } })
+  const addItemSilent = (product: Product, quantity = 1) => {
+    dispatch({ type: 'ADD_ITEM_SILENT', payload: { product, quantity } })
   }
 
   const removeItem = (id: string) => {
