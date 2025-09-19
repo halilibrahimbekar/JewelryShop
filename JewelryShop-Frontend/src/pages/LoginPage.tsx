@@ -4,28 +4,48 @@ import { login as apiLogin } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
 import mivoraLogo from '../assets/mivora.png'
+import { useFormValidation } from '../hooks/useFormValidation'
+import { loginSchema, type LoginFormData } from '../schemas/validationSchemas'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [apiError, setApiError] = useState('')
   
   const navigate = useNavigate()
   const { login } = useAuth()
 
+  const {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    validateForm
+  } = useFormValidation<LoginFormData>({
+    schema: loginSchema,
+    initialValues: {
+      email: '',
+      password: ''
+    }
+  })
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!validateForm()) {
+      return
+    }
+    
     setLoading(true)
-    setError('')
+    setApiError('')
 
     try {
-      await apiLogin({ email, password })
+      await apiLogin({ email: values.email, password: values.password })
       login()
       navigate('/')
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Giriş başarısız')
+      setApiError(err.response?.data?.message || 'Giriş başarısız')
     } finally {
       setLoading(false)
     }
@@ -58,9 +78,9 @@ export default function LoginPage() {
           
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
-              <div>
+                            <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  E-posta
+                  E-posta Adresi
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -72,12 +92,20 @@ export default function LoginPage() {
                     type="email"
                     autoComplete="email"
                     required
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                    className={`block w-full pl-10 pr-3 py-3 border rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 ${
+                      touched.email && errors.email 
+                        ? 'border-red-300 bg-red-50' 
+                        : 'border-gray-300'
+                    }`}
                     placeholder="ornek@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={values.email}
+                    onChange={(e) => handleChange('email', e.target.value)}
+                    onBlur={() => handleBlur('email')}
                   />
                 </div>
+                {touched.email && errors.email && (
+                  <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                )}
               </div>
               
               <div>
@@ -94,10 +122,15 @@ export default function LoginPage() {
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="current-password"
                     required
-                    className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                    className={`block w-full pl-10 pr-12 py-3 border rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 ${
+                      touched.password && errors.password 
+                        ? 'border-red-300 bg-red-50' 
+                        : 'border-gray-300'
+                    }`}
                     placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={values.password}
+                    onChange={(e) => handleChange('password', e.target.value)}
+                    onBlur={() => handleBlur('password')}
                   />
                   <button
                     type="button"
@@ -111,19 +144,22 @@ export default function LoginPage() {
                     )}
                   </button>
                 </div>
+                {touched.password && errors.password && (
+                  <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                )}
               </div>
             </div>
 
-            {error && (
+            {apiError && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                <p className="text-red-600 text-sm">{error}</p>
+                <p className="text-red-600 text-sm">{apiError}</p>
               </div>
             )}
 
             <div>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !values.email || !values.password}
                 className="btn-primary w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (

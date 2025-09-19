@@ -2,53 +2,51 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, CreditCard, MapPin, User, Phone, Mail, Check } from 'lucide-react'
 import { useCart } from '../context/CartContext'
-
-interface CheckoutForm {
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  address: string
-  city: string
-  postalCode: string
-  cardNumber: string
-  expiryDate: string
-  cvv: string
-  cardName: string
-}
+import { useFormValidation } from '../hooks/useFormValidation'
+import { checkoutSchema, type CheckoutFormData } from '../schemas/validationSchemas'
 
 export default function CheckoutPage() {
   const { items, getTotalPrice } = useCart()
   const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] = useState<CheckoutForm>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    postalCode: '',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    cardName: ''
-  })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
+  const {
+    values,
+    errors,
+    touched,
+    handleInputChange,
+    handleInputBlur,
+    validateForm
+  } = useFormValidation<CheckoutFormData>({
+    schema: checkoutSchema,
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      address: '',
+      city: '',
+      postalCode: '',
+      cardNumber: '',
+      expiryDate: '',
+      cvv: '',
+      cardHolder: ''
+    }
+  })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    
+    const isValid = validateForm()
+    if (!isValid) {
+      console.log('Validation errors:', errors)
+      return
+    }
+    
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1)
     } else {
       // Final submission
-      console.log('Order submitted:', formData)
+      console.log('Order submitted:', values)
       alert('Siparişiniz başarıyla alındı!')
     }
   }
@@ -62,11 +60,11 @@ export default function CheckoutPage() {
   const isStepValid = () => {
     switch (currentStep) {
       case 1:
-        return formData.firstName && formData.lastName && formData.email && formData.phone
+        return values.firstName && values.lastName && values.email && values.phone
       case 2:
-        return formData.address && formData.city && formData.postalCode
+        return values.address && values.city && values.postalCode
       case 3:
-        return formData.cardName && formData.cardNumber && formData.expiryDate && formData.cvv
+        return values.cardHolder && values.cardNumber && values.expiryDate && values.cvv
       default:
         return false
     }
@@ -128,7 +126,7 @@ export default function CheckoutPage() {
             
             <div className="space-y-4 mb-6">
               {items.map((item) => (
-                <div key={`${item.id}-${item.size}`} className="flex items-center space-x-4">
+                <div key={item.id} className="flex items-center space-x-4">
                   <img
                     src={item.images[0]}
                     alt={item.name}
@@ -137,7 +135,7 @@ export default function CheckoutPage() {
                   <div className="flex-1">
                     <h3 className="font-medium text-gray-900">{item.name}</h3>
                     <p className="text-sm text-gray-500">
-                      Beden: {item.size} • Adet: {item.quantity}
+                      Adet: {item.quantity}
                     </p>
                   </div>
                   <p className="font-medium text-gray-900">
@@ -214,11 +212,19 @@ export default function CheckoutPage() {
                       <input
                         type="text"
                         name="firstName"
-                        value={formData.firstName}
+                        value={values.firstName}
                         onChange={handleInputChange}
+                        onBlur={handleInputBlur}
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                          touched.firstName && errors.firstName 
+                            ? 'border-red-500 bg-red-50' 
+                            : 'border-gray-300'
+                        }`}
                       />
+                      {touched.firstName && errors.firstName && (
+                        <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -227,11 +233,19 @@ export default function CheckoutPage() {
                       <input
                         type="text"
                         name="lastName"
-                        value={formData.lastName}
+                        value={values.lastName}
                         onChange={handleInputChange}
+                        onBlur={handleInputBlur}
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                          touched.lastName && errors.lastName 
+                            ? 'border-red-500 bg-red-50' 
+                            : 'border-gray-300'
+                        }`}
                       />
+                      {touched.lastName && errors.lastName && (
+                        <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
+                      )}
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4 mt-4">
@@ -243,11 +257,19 @@ export default function CheckoutPage() {
                       <input
                         type="email"
                         name="email"
-                        value={formData.email}
+                        value={values.email}
                         onChange={handleInputChange}
+                        onBlur={handleInputBlur}
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                          touched.email && errors.email 
+                            ? 'border-red-500 bg-red-50' 
+                            : 'border-gray-300'
+                        }`}
                       />
+                      {touched.email && errors.email && (
+                        <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -257,11 +279,19 @@ export default function CheckoutPage() {
                       <input
                         type="tel"
                         name="phone"
-                        value={formData.phone}
+                        value={values.phone}
                         onChange={handleInputChange}
+                        onBlur={handleInputBlur}
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                          touched.phone && errors.phone 
+                            ? 'border-red-500 bg-red-50' 
+                            : 'border-gray-300'
+                        }`}
                       />
+                      {touched.phone && errors.phone && (
+                        <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -282,11 +312,19 @@ export default function CheckoutPage() {
                       <input
                         type="text"
                         name="address"
-                        value={formData.address}
+                        value={values.address}
                         onChange={handleInputChange}
+                        onBlur={handleInputBlur}
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                          touched.address && errors.address 
+                            ? 'border-red-500 bg-red-50' 
+                            : 'border-gray-300'
+                        }`}
                       />
+                      {touched.address && errors.address && (
+                        <p className="mt-1 text-sm text-red-600">{errors.address}</p>
+                      )}
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -296,11 +334,19 @@ export default function CheckoutPage() {
                         <input
                           type="text"
                           name="city"
-                          value={formData.city}
+                          value={values.city}
                           onChange={handleInputChange}
+                          onBlur={handleInputBlur}
                           required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                            touched.city && errors.city 
+                              ? 'border-red-500 bg-red-50' 
+                              : 'border-gray-300'
+                          }`}
                         />
+                        {touched.city && errors.city && (
+                          <p className="mt-1 text-sm text-red-600">{errors.city}</p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -309,11 +355,19 @@ export default function CheckoutPage() {
                         <input
                           type="text"
                           name="postalCode"
-                          value={formData.postalCode}
+                          value={values.postalCode}
                           onChange={handleInputChange}
+                          onBlur={handleInputBlur}
                           required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                            touched.postalCode && errors.postalCode 
+                              ? 'border-red-500 bg-red-50' 
+                              : 'border-gray-300'
+                          }`}
                         />
+                        {touched.postalCode && errors.postalCode && (
+                          <p className="mt-1 text-sm text-red-600">{errors.postalCode}</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -334,12 +388,20 @@ export default function CheckoutPage() {
                       </label>
                       <input
                         type="text"
-                        name="cardName"
-                        value={formData.cardName}
+                        name="cardHolder"
+                        value={values.cardHolder}
                         onChange={handleInputChange}
+                        onBlur={handleInputBlur}
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                          touched.cardHolder && errors.cardHolder 
+                            ? 'border-red-500 bg-red-50' 
+                            : 'border-gray-300'
+                        }`}
                       />
+                      {touched.cardHolder && errors.cardHolder && (
+                        <p className="mt-1 text-sm text-red-600">{errors.cardHolder}</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -348,12 +410,20 @@ export default function CheckoutPage() {
                       <input
                         type="text"
                         name="cardNumber"
-                        value={formData.cardNumber}
+                        value={values.cardNumber}
                         onChange={handleInputChange}
+                        onBlur={handleInputBlur}
                         placeholder="1234 5678 9012 3456"
                         required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                          touched.cardNumber && errors.cardNumber 
+                            ? 'border-red-500 bg-red-50' 
+                            : 'border-gray-300'
+                        }`}
                       />
+                      {touched.cardNumber && errors.cardNumber && (
+                        <p className="mt-1 text-sm text-red-600">{errors.cardNumber}</p>
+                      )}
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -363,12 +433,20 @@ export default function CheckoutPage() {
                         <input
                           type="text"
                           name="expiryDate"
-                          value={formData.expiryDate}
+                          value={values.expiryDate}
                           onChange={handleInputChange}
+                          onBlur={handleInputBlur}
                           placeholder="MM/YY"
                           required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                            touched.expiryDate && errors.expiryDate 
+                              ? 'border-red-500 bg-red-50' 
+                              : 'border-gray-300'
+                          }`}
                         />
+                        {touched.expiryDate && errors.expiryDate && (
+                          <p className="mt-1 text-sm text-red-600">{errors.expiryDate}</p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -377,12 +455,20 @@ export default function CheckoutPage() {
                         <input
                           type="text"
                           name="cvv"
-                          value={formData.cvv}
+                          value={values.cvv}
                           onChange={handleInputChange}
+                          onBlur={handleInputBlur}
                           placeholder="123"
                           required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                            touched.cvv && errors.cvv 
+                              ? 'border-red-500 bg-red-50' 
+                              : 'border-gray-300'
+                          }`}
                         />
+                        {touched.cvv && errors.cvv && (
+                          <p className="mt-1 text-sm text-red-600">{errors.cvv}</p>
+                        )}
                       </div>
                     </div>
                   </div>

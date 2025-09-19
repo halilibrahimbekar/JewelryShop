@@ -5,6 +5,8 @@ import { User, Package, MapPin, Heart, LogOut, Edit, Save, X } from 'lucide-reac
 import OrderHistory from '../components/OrderHistory'
 import AddressManagement from '../components/AddressManagement'
 import Favorites from '../components/Favorites'
+import { useFormValidation } from '../hooks/useFormValidation'
+import { profileSchema, type ProfileFormData } from '../schemas/validationSchemas'
 
 interface UserProfile {
   id: string
@@ -30,7 +32,23 @@ export default function ProfilePage() {
     totalOrders: 12,
     totalSpent: 45600
   })
-  const [editedProfile, setEditedProfile] = useState<UserProfile>(userProfile)
+
+  const {
+    values,
+    errors,
+    touched,
+    handleInputChange: handleValidationChange,
+    handleInputBlur,
+    validateForm,
+    setValue
+  } = useFormValidation<ProfileFormData>({
+    schema: profileSchema,
+    initialValues: {
+      fullName: userProfile.fullName,
+      email: userProfile.email,
+      phone: userProfile.phone
+    }
+  })
 
   useEffect(() => {
     if (!isAuth) {
@@ -38,28 +56,44 @@ export default function ProfilePage() {
     }
   }, [isAuth, navigate])
 
+  useEffect(() => {
+    // Sync validation values with profile data
+    setValue('fullName', userProfile.fullName)
+    setValue('email', userProfile.email)
+    setValue('phone', userProfile.phone)
+  }, [userProfile, setValue])
+
   const handleEdit = () => {
     setIsEditing(true)
-    setEditedProfile(userProfile)
   }
 
   const handleSave = () => {
-    setUserProfile(editedProfile)
+    const isValid = validateForm()
+    if (!isValid) {
+      console.log('Validation errors:', errors)
+      return
+    }
+    
+    // Update user profile with validated values
+    const updatedProfile = {
+      ...userProfile,
+      fullName: values.fullName,
+      email: values.email,
+      phone: values.phone || userProfile.phone
+    }
+    
+    setUserProfile(updatedProfile)
     setIsEditing(false)
     // TODO: API call to update profile
-    console.log('Profile updated:', editedProfile)
+    console.log('Profile updated:', updatedProfile)
   }
 
   const handleCancel = () => {
     setIsEditing(false)
-    setEditedProfile(userProfile)
-  }
-
-  const handleInputChange = (field: keyof UserProfile, value: string) => {
-    setEditedProfile(prev => ({
-      ...prev,
-      [field]: value
-    }))
+    // Reset validation values to current profile
+    setValue('fullName', userProfile.fullName)
+    setValue('email', userProfile.email)
+    setValue('phone', userProfile.phone)
   }
 
   const handleLogout = async () => {
@@ -250,12 +284,23 @@ export default function ProfilePage() {
                       Ad Soyad
                     </label>
                     {isEditing ? (
-                      <input
-                        type="text"
-                        value={editedProfile.fullName}
-                        onChange={(e) => handleInputChange('fullName', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      />
+                      <>
+                        <input
+                          type="text"
+                          name="fullName"
+                          value={values.fullName}
+                          onChange={handleValidationChange}
+                          onBlur={handleInputBlur}
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                            touched.fullName && errors.fullName 
+                              ? 'border-red-500 bg-red-50' 
+                              : 'border-gray-300'
+                          }`}
+                        />
+                        {touched.fullName && errors.fullName && (
+                          <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
+                        )}
+                      </>
                     ) : (
                       <p className="text-gray-900 bg-gray-50 px-4 py-3 rounded-lg">{userProfile.fullName}</p>
                     )}
@@ -266,12 +311,23 @@ export default function ProfilePage() {
                       E-posta
                     </label>
                     {isEditing ? (
-                      <input
-                        type="email"
-                        value={editedProfile.email}
-                        onChange={(e) => handleInputChange('email', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      />
+                      <>
+                        <input
+                          type="email"
+                          name="email"
+                          value={values.email}
+                          onChange={handleValidationChange}
+                          onBlur={handleInputBlur}
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                            touched.email && errors.email 
+                              ? 'border-red-500 bg-red-50' 
+                              : 'border-gray-300'
+                          }`}
+                        />
+                        {touched.email && errors.email && (
+                          <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                        )}
+                      </>
                     ) : (
                       <p className="text-gray-900 bg-gray-50 px-4 py-3 rounded-lg">{userProfile.email}</p>
                     )}
@@ -282,12 +338,23 @@ export default function ProfilePage() {
                       Telefon
                     </label>
                     {isEditing ? (
-                      <input
-                        type="tel"
-                        value={editedProfile.phone}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      />
+                      <>
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={values.phone || ''}
+                          onChange={handleValidationChange}
+                          onBlur={handleInputBlur}
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                            touched.phone && errors.phone 
+                              ? 'border-red-500 bg-red-50' 
+                              : 'border-gray-300'
+                          }`}
+                        />
+                        {touched.phone && errors.phone && (
+                          <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+                        )}
+                      </>
                     ) : (
                       <p className="text-gray-900 bg-gray-50 px-4 py-3 rounded-lg">{userProfile.phone}</p>
                     )}

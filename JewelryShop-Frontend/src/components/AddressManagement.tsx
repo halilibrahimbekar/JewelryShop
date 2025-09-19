@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { MapPin, Plus, Edit, Trash2, Home, Building, Star } from 'lucide-react'
+import { useFormValidation } from '../hooks/useFormValidation'
+import { addressSchema, type AddressFormData as AddressValidationData } from '../schemas/validationSchemas'
 
 export interface Address {
   id: string
@@ -41,17 +43,6 @@ const mockAddresses: Address[] = [
   }
 ]
 
-interface AddressFormData {
-  title: string
-  type: 'home' | 'work' | 'other'
-  fullName: string
-  phone: string
-  address: string
-  district: string
-  city: string
-  postalCode: string
-}
-
 interface AddressManagementProps {
   className?: string
 }
@@ -61,15 +52,29 @@ export default function AddressManagement({ className = '' }: AddressManagementP
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingAddress, setEditingAddress] = useState<Address | null>(null)
-  const [formData, setFormData] = useState<AddressFormData>({
-    title: '',
-    type: 'home',
-    fullName: '',
-    phone: '',
-    address: '',
-    district: '',
-    city: '',
-    postalCode: ''
+
+  const {
+    values,
+    errors,
+    touched,
+    handleInputChange,
+    handleInputBlur,
+    handleTextareaChange,
+    handleTextareaBlur,
+    validateForm,
+    setValue,
+    reset
+  } = useFormValidation<AddressValidationData>({
+    schema: addressSchema,
+    initialValues: {
+      title: '',
+      fullName: '',
+      phone: '',
+      address: '',
+      city: '',
+      district: '',
+      postalCode: ''
+    }
   })
 
   useEffect(() => {
@@ -86,31 +91,19 @@ export default function AddressManagement({ className = '' }: AddressManagementP
 
   const handleAddNew = () => {
     setEditingAddress(null)
-    setFormData({
-      title: '',
-      type: 'home',
-      fullName: '',
-      phone: '',
-      address: '',
-      district: '',
-      city: '',
-      postalCode: ''
-    })
+    reset()
     setShowForm(true)
   }
 
   const handleEdit = (address: Address) => {
     setEditingAddress(address)
-    setFormData({
-      title: address.title,
-      type: address.type,
-      fullName: address.fullName,
-      phone: address.phone,
-      address: address.address,
-      district: address.district,
-      city: address.city,
-      postalCode: address.postalCode
-    })
+    setValue('title', address.title)
+    setValue('fullName', address.fullName)
+    setValue('phone', address.phone)
+    setValue('address', address.address)
+    setValue('district', address.district)
+    setValue('city', address.city)
+    setValue('postalCode', address.postalCode)
     setShowForm(true)
   }
 
@@ -132,18 +125,40 @@ export default function AddressManagement({ className = '' }: AddressManagementP
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
+    const isValid = validateForm()
+    if (!isValid) {
+      console.log('Validation errors:', errors)
+      return
+    }
+    
     if (editingAddress) {
       // Edit existing address
       setAddresses(prev => prev.map(addr => 
         addr.id === editingAddress.id 
-          ? { ...addr, ...formData }
+          ? { 
+            ...addr, 
+            title: values.title,
+            fullName: values.fullName,
+            phone: values.phone,
+            address: values.address,
+            city: values.city,
+            district: values.district,
+            postalCode: values.postalCode
+          }
           : addr
       ))
     } else {
       // Add new address
       const newAddress: Address = {
         id: Date.now().toString(),
-        ...formData,
+        title: values.title,
+        type: 'home', // Default type
+        fullName: values.fullName,
+        phone: values.phone,
+        address: values.address,
+        district: values.district,
+        city: values.city,
+        postalCode: values.postalCode,
         isDefault: addresses.length === 0 // First address is default
       }
       setAddresses(prev => [...prev, newAddress])
@@ -151,14 +166,8 @@ export default function AddressManagement({ className = '' }: AddressManagementP
     
     setShowForm(false)
     setEditingAddress(null)
+    reset()
     // TODO: API call to save address
-  }
-
-  const handleInputChange = (field: keyof AddressFormData, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }))
   }
 
   const getAddressTypeIcon = (type: Address['type']) => {
@@ -234,12 +243,21 @@ export default function AddressManagement({ className = '' }: AddressManagementP
                   </label>
                   <input
                     type="text"
-                    value={formData.title}
-                    onChange={(e) => handleInputChange('title', e.target.value)}
+                    name="title"
+                    value={values.title}
+                    onChange={handleInputChange}
+                    onBlur={handleInputBlur}
                     placeholder="Ev, İş, Diğer..."
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                      touched.title && errors.title 
+                        ? 'border-red-500 bg-red-50' 
+                        : 'border-gray-300'
+                    }`}
                   />
+                  {touched.title && errors.title && (
+                    <p className="mt-1 text-sm text-red-600">{errors.title}</p>
+                  )}
                 </div>
 
                 <div>
@@ -247,8 +265,8 @@ export default function AddressManagement({ className = '' }: AddressManagementP
                     Adres Tipi
                   </label>
                   <select
-                    value={formData.type}
-                    onChange={(e) => handleInputChange('type', e.target.value as Address['type'])}
+                    value="home"
+                    onChange={() => {}} // Type is not in validation schema, using default
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   >
                     <option value="home">Ev</option>
@@ -264,11 +282,20 @@ export default function AddressManagement({ className = '' }: AddressManagementP
                     </label>
                     <input
                       type="text"
-                      value={formData.fullName}
-                      onChange={(e) => handleInputChange('fullName', e.target.value)}
+                      name="fullName"
+                      value={values.fullName}
+                      onChange={handleInputChange}
+                      onBlur={handleInputBlur}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                        touched.fullName && errors.fullName 
+                          ? 'border-red-500 bg-red-50' 
+                          : 'border-gray-300'
+                      }`}
                     />
+                    {touched.fullName && errors.fullName && (
+                      <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -276,11 +303,20 @@ export default function AddressManagement({ className = '' }: AddressManagementP
                     </label>
                     <input
                       type="tel"
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      name="phone"
+                      value={values.phone}
+                      onChange={handleInputChange}
+                      onBlur={handleInputBlur}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                        touched.phone && errors.phone 
+                          ? 'border-red-500 bg-red-50' 
+                          : 'border-gray-300'
+                      }`}
                     />
+                    {touched.phone && errors.phone && (
+                      <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+                    )}
                   </div>
                 </div>
 
@@ -289,12 +325,21 @@ export default function AddressManagement({ className = '' }: AddressManagementP
                     Adres
                   </label>
                   <textarea
-                    value={formData.address}
-                    onChange={(e) => handleInputChange('address', e.target.value)}
+                    name="address"
+                    value={values.address}
+                    onChange={handleTextareaChange}
+                    onBlur={handleTextareaBlur}
                     rows={3}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none transition-all duration-300 ${
+                      touched.address && errors.address 
+                        ? 'border-red-500 bg-red-50' 
+                        : 'border-gray-300'
+                    }`}
                   />
+                  {touched.address && errors.address && (
+                    <p className="mt-1 text-sm text-red-600">{errors.address}</p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -304,11 +349,20 @@ export default function AddressManagement({ className = '' }: AddressManagementP
                     </label>
                     <input
                       type="text"
-                      value={formData.district}
-                      onChange={(e) => handleInputChange('district', e.target.value)}
+                      name="district"
+                      value={values.district}
+                      onChange={handleInputChange}
+                      onBlur={handleInputBlur}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                        touched.district && errors.district 
+                          ? 'border-red-500 bg-red-50' 
+                          : 'border-gray-300'
+                      }`}
                     />
+                    {touched.district && errors.district && (
+                      <p className="mt-1 text-sm text-red-600">{errors.district}</p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -316,11 +370,20 @@ export default function AddressManagement({ className = '' }: AddressManagementP
                     </label>
                     <input
                       type="text"
-                      value={formData.city}
-                      onChange={(e) => handleInputChange('city', e.target.value)}
+                      name="city"
+                      value={values.city}
+                      onChange={handleInputChange}
+                      onBlur={handleInputBlur}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                        touched.city && errors.city 
+                          ? 'border-red-500 bg-red-50' 
+                          : 'border-gray-300'
+                      }`}
                     />
+                    {touched.city && errors.city && (
+                      <p className="mt-1 text-sm text-red-600">{errors.city}</p>
+                    )}
                   </div>
                 </div>
 
@@ -330,11 +393,20 @@ export default function AddressManagement({ className = '' }: AddressManagementP
                   </label>
                   <input
                     type="text"
-                    value={formData.postalCode}
-                    onChange={(e) => handleInputChange('postalCode', e.target.value)}
+                    name="postalCode"
+                    value={values.postalCode}
+                    onChange={handleInputChange}
+                    onBlur={handleInputBlur}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ${
+                      touched.postalCode && errors.postalCode 
+                        ? 'border-red-500 bg-red-50' 
+                        : 'border-gray-300'
+                    }`}
                   />
+                  {touched.postalCode && errors.postalCode && (
+                    <p className="mt-1 text-sm text-red-600">{errors.postalCode}</p>
+                  )}
                 </div>
 
                 <div className="flex space-x-3 pt-4">
