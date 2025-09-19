@@ -1,23 +1,58 @@
-# JewelryShop (dotnet 8)
+# 💎 JewelryShop
 
-Minimal e-commerce starter for selling jewelry. Uses Clean Architecture concepts with separate projects: Api, Application, Domain, Infrastructure.
+Modern jewelry e-commerce platform. Full-stack application built with Clean Architecture principles.
 
-How to run (Windows PowerShell):
+## 🛠️ Tech Stack
 
-1. Ensure .NET 8 SDK is installed.
-2. Start PostgreSQL and create a database, or change connection string in `JewelryShop.Api\appsettings.Development.json`.
-3. Restore and build:
+**Backend (.NET 8)**
+- ASP.NET Core Web API
+- Entity Framework Core
+- PostgreSQL/SQLite
+- Clean Architecture
 
-```powershell
-cd C:\Projects\JewelryShop
-dotnet restore
-dotnet build
-``` 
+**Frontend (React 19)**
+- TypeScript
+- Vite
+- Zod Validation
+- Responsive Design
 
-4. Run the API:
+## 🚀 Installation
 
-```powershell
-dotnet run --project JewelryShop.Api\JewelryShop.Api.csproj
+### Backend
+```bash
+cd JewelryShop.Api
+dotnet ef database update --project ../JewelryShop.Infrastructure --startup-project .
+dotnet run
 ```
 
-Next steps: implement AuthService, add migrations and apply them, flesh out repositories and DTOs.
+### Frontend
+```bash
+cd JewelryShop-Frontend
+npm install
+npm run dev
+```
+
+## 📱 Features
+
+- ✅ User authentication system
+- ✅ Product catalog management
+- ✅ Shopping cart & order processing
+- ✅ Profile & address management
+- ✅ Form validations (Zod)
+- ✅ Responsive design
+
+## 🔗 URLs
+
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:5000`
+
+## 📂 Project Structure
+
+```
+JewelryShop/
+├── JewelryShop.Api/          # Web API layer
+├── JewelryShop.Application/  # Business logic
+├── JewelryShop.Domain/       # Domain entities
+├── JewelryShop.Infrastructure/ # Data access
+└── JewelryShop-Frontend/     # React frontend
+```
