@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { fetchProducts, login, register } from '../services/api'
 import type { Product } from '../services/api'
 import ProductCard from '../components/ProductCard.tsx'
@@ -69,8 +70,10 @@ export default function HomePage() {
       authLogin()
       setShowAuthModal(false)
       resetLogin()
+      toast.success('✨ Giriş başarılı! Hoş geldiniz 💎')
     } catch (error: any) {
       setAuthError(error.response?.data?.message || 'Giriş yapılırken bir hata oluştu')
+      toast.error('❌ Giriş yapılırken bir hata oluştu')
     } finally {
       setAuthLoading(false)
     }
@@ -88,8 +91,10 @@ export default function HomePage() {
       setIsLoginMode(true)
       setAuthError('')
       resetRegister()
+      toast.success('🎉 Kayıt başarılı! Şimdi giriş yapabilirsiniz ✨')
     } catch (error: any) {
       setAuthError(error.response?.data?.message || 'Kayıt olurken bir hata oluştu')
+      toast.error('❌ Kayıt olurken bir hata oluştu')
     } finally {
       setAuthLoading(false)
     }

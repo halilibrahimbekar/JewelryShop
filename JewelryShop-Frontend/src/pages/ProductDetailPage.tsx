@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { fetchProductById } from '../services/api'
 import type { Product } from '../services/api'
 import { useCart } from '../context/CartContext'
@@ -77,6 +78,7 @@ export default function ProductDetailPage() {
     
     addItem(product, quantity)
     setQuantity(1)
+    toast.success(`✨ ${product.name} sepete eklendi! 🛒`)
   }
 
   const handleBuyNow = () => {
@@ -84,7 +86,7 @@ export default function ProductDetailPage() {
     
     // Önce sepete ekle (cart sidebar'ı açmadan)
     addItemSilent(product, quantity)
-    console.log('Ürün sepete eklendi ve checkout sayfasına yönlendiriliyor')
+    toast.success('🚀 Ürün sepete eklendi, checkout\'a yönlendiriliyorsunuz!')
     // Sonra checkout'a yönlendir
     navigate('/checkout')
   }

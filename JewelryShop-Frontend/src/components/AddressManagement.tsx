@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import toast from 'react-hot-toast'
 import { MapPin, Plus, Edit, Trash2, Home, Building, Star } from 'lucide-react'
 import { useFormValidation } from '../hooks/useFormValidation'
 import { addressSchema, type AddressFormData as AddressValidationData } from '../schemas/validationSchemas'
@@ -110,6 +111,7 @@ export default function AddressManagement({ className = '' }: AddressManagementP
   const handleDelete = (addressId: string) => {
     if (window.confirm('Bu adresi silmek istediğinizden emin misiniz?')) {
       setAddresses(prev => prev.filter(addr => addr.id !== addressId))
+      toast.success('🗑️ Adres başarıyla silindi!')
       // TODO: API call to delete address
     }
   }
@@ -119,6 +121,7 @@ export default function AddressManagement({ className = '' }: AddressManagementP
       ...addr,
       isDefault: addr.id === addressId
     })))
+    toast.success('⭐ Varsayılan adres güncellendi!')
     // TODO: API call to set default address
   }
 
@@ -127,7 +130,7 @@ export default function AddressManagement({ className = '' }: AddressManagementP
     
     const isValid = validateForm()
     if (!isValid) {
-      console.log('Validation errors:', errors)
+      toast.error('❌ Lütfen form hatalarını düzeltiniz')
       return
     }
     
@@ -147,6 +150,7 @@ export default function AddressManagement({ className = '' }: AddressManagementP
           }
           : addr
       ))
+      toast.success('✨ Adres başarıyla güncellendi! 📍')
     } else {
       // Add new address
       const newAddress: Address = {
@@ -162,6 +166,7 @@ export default function AddressManagement({ className = '' }: AddressManagementP
         isDefault: addresses.length === 0 // First address is default
       }
       setAddresses(prev => [...prev, newAddress])
+      toast.success('✨ Yeni adres başarıyla eklendi! 📍')
     }
     
     setShowForm(false)

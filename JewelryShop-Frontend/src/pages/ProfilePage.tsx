@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import { User, Package, MapPin, Heart, LogOut, Edit, Save, X } from 'lucide-react'
 import OrderHistory from '../components/OrderHistory'
@@ -70,7 +71,7 @@ export default function ProfilePage() {
   const handleSave = () => {
     const isValid = validateForm()
     if (!isValid) {
-      console.log('Validation errors:', errors)
+      toast.error('❌ Lütfen form hatalarını düzeltiniz')
       return
     }
     
@@ -85,7 +86,7 @@ export default function ProfilePage() {
     setUserProfile(updatedProfile)
     setIsEditing(false)
     // TODO: API call to update profile
-    console.log('Profile updated:', updatedProfile)
+    toast.success('✨ Profil bilgileriniz başarıyla güncellendi! 💎')
   }
 
   const handleCancel = () => {

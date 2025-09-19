@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { ArrowLeft, ArrowRight, CreditCard, MapPin, User, Phone, Mail, Check } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useFormValidation } from '../hooks/useFormValidation'
@@ -85,7 +86,9 @@ export default function CheckoutPage() {
       
       // Final submission
       console.log('Order submitted:', values)
-      alert('Siparişiniz başarıyla alındı!')
+      toast.success('🎉 Siparişiniz başarıyla alındı! Teşekkür ederiz.', {
+        duration: 5000,
+      })
     }
   }
 
