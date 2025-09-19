@@ -15,6 +15,9 @@ export default function ProductsPage() {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [searchParams] = useSearchParams()
   const [showScrollTop, setShowScrollTop] = useState(false)
+  
+  // Sort state
+  const [sortBy, setSortBy] = useState('default')
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -33,8 +36,9 @@ export default function ProductsPage() {
 
   useEffect(() => {
     const loadProducts = async () => {
+      setLoading(true)
       try {
-        const data = await fetchProducts()
+        const data = await fetchProducts(sortBy, selectedCategory)
         setProducts(data)
         setFilteredProducts(data)
       } catch (error) {
@@ -45,7 +49,7 @@ export default function ProductsPage() {
     }
 
     loadProducts()
-  }, [])
+  }, [sortBy, selectedCategory]) // kategori değiştiğinde de API'yi tekrar çağır
 
   // Handle category from URL params
   useEffect(() => {
@@ -66,14 +70,7 @@ export default function ProductsPage() {
   useEffect(() => {
     let filtered = products
 
-    // Filter by category
-    if (selectedCategory !== 'Tümü') {
-      filtered = filtered.filter(product => 
-        product.category === selectedCategory
-      )
-    }
-
-    // Filter by search term
+    // Filter by search term (local filtering for search)
     if (searchTerm) {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -81,8 +78,9 @@ export default function ProductsPage() {
       )
     }
 
+    // Note: Category filtering and sorting are now handled by the API
     setFilteredProducts(filtered)
-  }, [searchTerm, selectedCategory, products])
+  }, [searchTerm, products])
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -116,21 +114,51 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* Search */}
-        <div className="mb-8 max-w-md mx-auto">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
+        {/* Search and Sort */}
+        <div className="mb-8 max-w-4xl mx-auto">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+            {/* Search */}
+            <div className="relative flex-1 max-w-md">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Ürün ara..."
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-            <input
-              type="text"
-              placeholder="Ürün ara..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            
+            {/* Sort */}
+            <div className="flex-shrink-0">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 min-w-[180px]"
+              >
+                <option value="default">Varsayılan</option>
+                <option value="price-low">Fiyat: Düşük → Yüksek</option>
+                <option value="price-high">Fiyat: Yüksek → Düşük</option>
+              </select>
+            </div>
           </div>
         </div>
+
+        {/* Results Info */}
+        {!loading && (
+          <div className="mb-4 text-center">
+            <p className="text-gray-600">
+              {filteredProducts.length} ürün bulundu
+              {searchTerm && (
+                <span className="ml-1">
+                  "<span className="font-medium">{searchTerm}</span>" için
+                </span>
+              )}
+            </p>
+          </div>
+        )}
 
         {/* Products Grid */}
         {loading ? (

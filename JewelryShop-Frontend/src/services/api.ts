@@ -142,14 +142,42 @@ export interface AuthResponse {
 }
 
 // Product API functions
-export async function fetchProducts(): Promise<Product[]> {
+export async function fetchProducts(sortBy?: string, category?: string): Promise<Product[]> {
   try {
-    const response = await api.get('/api/products')
+    const params = new URLSearchParams()
+    if (sortBy && sortBy !== 'default') {
+      params.append('sortBy', sortBy)
+    }
+    if (category && category !== 'Tümü') {
+      params.append('category', category)
+    }
+    
+    const response = await api.get(`/api/products?${params.toString()}`)
     return response.data
   } catch (error) {
     console.error('Error fetching products, using mock data:', error)
-    // Return mock data when API is not available
-    return mockProducts
+    // Return mock data when API is not available - simulate backend filtering and sorting
+    let products = [...mockProducts]
+    
+    // Simulate backend category filtering
+    if (category && category !== 'Tümü') {
+      products = products.filter(product => product.category === category)
+    }
+    
+    // Simulate backend sorting logic
+    switch (sortBy) {
+      case 'price-low':
+        products.sort((a, b) => a.price - b.price)
+        break
+      case 'price-high':
+        products.sort((a, b) => b.price - a.price)
+        break
+      default:
+        // Keep original order for 'default' or undefined
+        break
+    }
+    
+    return products
   }
 }
 
