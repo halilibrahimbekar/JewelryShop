@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { fetchProducts } from '../services/api'
 import type { Product } from '../services/api'
 import ProductCard from '../components/ProductCard'
-import { Search } from 'lucide-react'
+import { Search, ChevronUp } from 'lucide-react'
 
 const categories = ['Tümü', 'Bileklik', 'Küpe', 'Yüzük', 'Kolye']
 
@@ -14,10 +14,21 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState('Tümü')
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [searchParams] = useSearchParams()
+  const [showScrollTop, setShowScrollTop] = useState(false)
 
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0)
+  }, [])
+
+  // Handle scroll to top button visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   useEffect(() => {
@@ -43,6 +54,14 @@ export default function ProductsPage() {
       setSelectedCategory(categoryFromUrl)
     }
   }, [searchParams])
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
 
   useEffect(() => {
     let filtered = products
@@ -137,6 +156,17 @@ export default function ProductsPage() {
           </>
         )}
       </div>
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 z-50 group"
+          aria-label="Sayfa başına dön"
+        >
+          <ChevronUp className="h-5 w-5 sm:h-6 sm:w-6 group-hover:animate-bounce" />
+        </button>
+      )}
     </div>
   )
 }
