@@ -48,12 +48,12 @@ export default function Header() {
             >
               Hakkımızda
             </Link>
-                        <Link
+                        {/* <Link
               to="/about"
               className="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
             >
               Kargom Nerede?
-            </Link>
+            </Link> */}
           </nav>
 
           {/* Desktop Auth & Cart */}
