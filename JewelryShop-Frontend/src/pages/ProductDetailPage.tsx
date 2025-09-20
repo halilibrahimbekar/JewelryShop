@@ -4,7 +4,7 @@ import toast from 'react-hot-toast'
 import { fetchProductById } from '../services/api'
 import type { Product } from '../services/api'
 import { useCart } from '../context/CartContext'
-import { ArrowLeft, Heart, Share2, ShoppingCart, Star, Shield, Truck } from 'lucide-react'
+import { ArrowLeft, Heart, Share2, ShoppingCart, Star, Shield, Truck, Copy, Check } from 'lucide-react'
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -14,6 +14,8 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [quantity, setQuantity] = useState(1)
   const [isFavorite, setIsFavorite] = useState(false)
+  const [showSharePopup, setShowSharePopup] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -31,6 +33,20 @@ export default function ProductDetailPage() {
 
     loadProduct()
   }, [id])
+
+  // Close share popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showSharePopup && !(event.target as Element).closest('.share-popup-container')) {
+        setShowSharePopup(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showSharePopup])
 
   if (loading) {
     return (
@@ -89,6 +105,21 @@ export default function ProductDetailPage() {
     toast.success('🚀 Ürün sepete eklendi, checkout\'a yönlendiriliyorsunuz!')
     // Sonra checkout'a yönlendir
     navigate('/checkout')
+  }
+
+  const handleCopyLink = async () => {
+    const currentUrl = window.location.href
+    try {
+      await navigator.clipboard.writeText(currentUrl)
+      setCopied(true)
+      toast.success('🔗 Ürün linki kopyalandı!')
+      setTimeout(() => {
+        setCopied(false)
+        setShowSharePopup(false)
+      }, 2000)
+    } catch (err) {
+      toast.error('❌ Link kopyalanırken hata oluştu')
+    }
   }
 
   return (
@@ -151,9 +182,49 @@ export default function ProductDetailPage() {
                   >
                     <Heart className={`h-5 w-5 ${isFavorite ? 'fill-current' : ''}`} />
                   </button>
-                  <button className="p-2 rounded-full border-2 border-gray-200 hover:border-gray-300 transition-colors">
-                    <Share2 className="h-5 w-5 text-gray-600" />
-                  </button>
+                  <div className="relative share-popup-container">
+                    <button 
+                      onClick={() => setShowSharePopup(!showSharePopup)}
+                      className="p-2 rounded-full border-2 border-gray-200 hover:border-gray-300 transition-colors"
+                    >
+                      <Share2 className="h-5 w-5 text-gray-600" />
+                    </button>
+                    
+                    {/* Share Popup */}
+                    {showSharePopup && (
+                      <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-50">
+                        <div className="mb-3">
+                          <h3 className="text-sm font-semibold text-gray-900 mb-2">Ürünü Paylaş</h3>
+                          <div className="bg-gray-50 rounded-lg p-3 border">
+                            <p className="text-xs text-gray-600 break-all">
+                              {window.location.href}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={handleCopyLink}
+                          disabled={copied}
+                          className={`w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                            copied 
+                              ? 'bg-green-100 text-green-700 border-green-200' 
+                              : 'bg-purple-600 hover:bg-purple-700 text-white'
+                          }`}
+                        >
+                          {copied ? (
+                            <>
+                              <Check className="h-4 w-4" />
+                              <span>Kopyalandı!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-4 w-4" />
+                              <span>Linki Kopyala</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               
