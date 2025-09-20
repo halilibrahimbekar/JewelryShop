@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { ArrowLeft, ArrowRight, CreditCard, MapPin, User, Phone, Mail, Check } from 'lucide-react'
 import { useCart } from '../context/CartContext'
@@ -8,6 +8,7 @@ import { checkoutSchema, type CheckoutFormData } from '../schemas/validationSche
 
 export default function CheckoutPage() {
   const { items, getTotalPrice } = useCart()
+  const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(1)
 
   const {
@@ -86,9 +87,18 @@ export default function CheckoutPage() {
       
       // Final submission
       console.log('Order submitted:', values)
-      toast.success('🎉 Siparişiniz başarıyla alındı! Teşekkür ederiz.', {
-        duration: 5000,
+      
+      // Generate order number
+      const orderNumber = 'MV-' + Date.now().toString().slice(-6)
+      
+      toast.success('🎉 Siparişiniz başarıyla alındı! Yönlendiriliyorsunuz...', {
+        duration: 3000,
       })
+      
+      // Navigate to order confirmation page
+      setTimeout(() => {
+        navigate(`/order-confirmation?orderNumber=${orderNumber}`)
+      }, 1500)
     }
   }
 
