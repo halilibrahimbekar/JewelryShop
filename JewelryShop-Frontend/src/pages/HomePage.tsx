@@ -407,9 +407,16 @@ export default function HomePage() {
                   <button
                     type="submit"
                     disabled={authLoading}
-                    className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="btn-primary w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {authLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+                    {authLoading ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        Giriş yapılıyor...
+                      </div>
+                    ) : (
+                      'Giriş Yap'
+                    )}
                   </button>
                 </form>
               ) : (
@@ -538,9 +545,16 @@ export default function HomePage() {
                   <button
                     type="submit"
                     disabled={authLoading}
-                    className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="btn-primary w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {authLoading ? 'Kayıt olunuyor...' : 'Kayıt Ol'}
+                    {authLoading ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        Hesap oluşturuluyor...
+                      </div>
+                    ) : (
+                      'Kayıt Ol'
+                    )}
                   </button>
                 </form>
               )}
