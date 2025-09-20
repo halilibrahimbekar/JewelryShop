@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import { User, Package, MapPin, Heart, LogOut, Edit, Save, X } from 'lucide-react'
@@ -57,15 +57,14 @@ export default function ProfilePage() {
     }
   }, [isAuth, navigate])
 
-  useEffect(() => {
-    // Sync validation values with profile data
-    setValue('fullName', userProfile.fullName)
-    setValue('email', userProfile.email)
-    setValue('phone', userProfile.phone)
-  }, [userProfile, setValue])
+  // Remove the problematic useEffect that caused infinite loop
 
   const handleEdit = () => {
     setIsEditing(true)
+    // Update form values when entering edit mode
+    setValue('fullName', userProfile.fullName)
+    setValue('email', userProfile.email)
+    setValue('phone', userProfile.phone)
   }
 
   const handleSave = () => {
@@ -98,8 +97,10 @@ export default function ProfilePage() {
   }
 
   const handleLogout = async () => {
+    console.log('Çıkış Yap butonuna tıklandı')
+    // Navigate first, then logout to prevent useEffect redirect
+    navigate('/')
     await logout()
-    navigate('/login')
   }
 
   if (!isAuth) {
@@ -131,12 +132,15 @@ export default function ProfilePage() {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Link
-                to="/products"
+              <button
+                onClick={() => {
+                  console.log('Alışverişe Devam Et butonuna tıklandı')
+                  navigate('/products')
+                }}
                 className="btn-secondary px-4 py-2 text-sm"
               >
                 Alışverişe Devam Et
-              </Link>
+              </button>
               <button
                 onClick={handleLogout}
                 className="flex items-center space-x-2 text-red-600 hover:text-red-700 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors"
