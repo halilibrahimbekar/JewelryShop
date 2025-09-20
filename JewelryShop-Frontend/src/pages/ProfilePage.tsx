@@ -149,35 +149,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Package className="h-6 w-6 text-blue-600" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Toplam Sipariş</h3>
-                <p className="text-2xl font-bold text-blue-600">{userProfile.totalOrders}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="">
-
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Heart className="h-6 w-6 text-purple-600" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Favori Ürünler</h3>
-                <p className="text-2xl font-bold text-purple-600">8</p>
-              </div>
-            </div>
-          </div>
-        </div>
+    
 
         {/* Navigation Tabs */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
